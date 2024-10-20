@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Warping and Mosaicing</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 20px;
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+      }
+
+      h2 {
+        color: #555;
+        margin-top: 20px;
+      }
+
+      p {
+        line-height: 1.6;
+        color: #666;
+      }
+
+      .image-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin: 20px 0;
+      }
+
+      .image-container img {
+        width: 35%;
+        margin: 5px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .formula {
+        display: flex;
+        justify-content: center;
+        margin: 20px 0;
+      }
+
+      .formula img {
+        max-width: 30%;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .image-container .blend{
+        width: 25%;
+        margin: 5px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>IMAGE WARPING and MOSAICING</h1>
+
+    <div>
+      <h2>1. Shoot and Digitize Pictures</h2>
+      <p>I took two pictures, one outside of Moffit and one in my room.</p>
+      <div class="image-container">
+        <img src="./img/my_room1.png" alt="My Room 1" />
+        <img src="./img/my_room2.png" alt="My Room 2" />
+      </div>
+      <div class="image-container">
+        <img src="./img/out-door-1.png" alt="Outdoor 1" />
+        <img src="./img/out-door-2.png" alt="Outdoor 2" />
+      </div>
+    </div>
+
+    <div>
+      <h2>2. Recover Homographies</h2>
+      <p>
+        To compute the entries of the homography matrix H, I set up a linear
+        system of equations in the form Ah = b, where h is a vector containing
+        the eight unknown entries of H. By selecting more than four
+        corresponding points, I ensured that the system was overdetermined,
+        which enhances stability and reduces sensitivity to noise. I then
+        utilized Singular Value Decomposition (SVD) to solve the system, taking
+        the last row of V<sup>T</sup> as the solution for h. After deriving the
+        formula, I use the tool from
+        <a
+          href="https://cal-cs180.github.io/fa23/hw/proj3/tool.html"
+          target="_blank"
+          >Project 3</a
+        >
+        to select the points from each image.
+      </p>
+      <div class="formula">
+        <img src="./img/forumula.png" alt="Homography Formula" />
+      </div>
+    </div>
+
+    <div>
+      <h2>3. Image Rectification</h2>
+      <p>
+        To test my code, I need to perform image rectification on a photograph
+        containing known rectangular objects, such as paintings or posters,
+        using homography. This step ensures that my homography and warping
+        functions work correctly before proceeding further.
+      </p>
+      <div class="image-container">
+        <img src="./img/mac_book.png" alt="Outdoor 1" />
+        <img src="./img/rectify_img_mac.jpg" alt="Outdoor 2" />
+      </div>
+      <div class="image-container">
+        <img src="./img/bedroom.png" alt="Outdoor 1" />
+        <img src="./img/rectify_img.jpg" alt="Outdoor 2" />
+      </div>
+    </div>
+    <div>
+      <h2>4. Wrap and Blend Images into a Mosaic</h2>
+      <p>
+        In this process, I developed a method to create an image mosaic by
+        warping multiple images to align them correctly in a common projection.
+        Instead of allowing one image to overwrite another, which can result in
+        noticeable edge artifacts, I employed weighted averaging to blend the
+        images seamlessly. By determining the final mosaic size first, I warped
+        all images into this predefined size, effectively stacking them
+        together. I then applied a feathering technique to smoothly blend the
+        overlapping regions of the images, allowing for a cohesive final image
+        that minimizes artifacts and enhances the overall visual quality of the
+        mosaic.
+      </p>
+      <div class="image-container">
+        <img src="./img/out-door-1.png" alt="Outdoor 1" class="blend"/>
+        <img src="./img/out-door-2.png" alt="Outdoor 2" class="blend"/>
+        <img src="./img/stitch_image.png" class="blend"/>
+      </div>
+       <div class="image-container">
+        <img src="./img/moffit_in_1.png" class="blend"/>
+        <img src="./img/moffit_in_2.png" class="blend"/>
+        <img src="./img/stitched_image.jpg" class="blend"/>
+      </div>
+      <div class="image-container">
+        <img src="./img/my_room1.png" class="blend"/>
+        <img src="./img/my_room2.png" class="blend"/>
+        <img src="./img/stitch_image_2.png" class="blend"/>
+      </div>
+     
+    </div>
+    </div>
+
+  </body>
+</html>

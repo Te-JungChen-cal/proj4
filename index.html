@@ -34,6 +34,12 @@
         margin: 20px 0;
       }
 
+      .image-container2 {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
       .image-container img {
         width: 35%;
         margin: 5px;
@@ -54,20 +60,30 @@
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       }
 
-      .image-container .blend{
+      .image-container .blend {
         width: 25%;
         margin: 5px;
         border-radius: 8px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       }
+
+      .feature_extract {
+        width: 80%;
+      }
+      .match {
+        width: 60%;
+      }
     </style>
   </head>
   <body>
-    <h1>IMAGE WARPING and MOSAICING</h1>
+    <h1>Part A: IMAGE WARPING and MOSAICING</h1>
 
     <div>
       <h2>1. Shoot and Digitize Pictures</h2>
-      <p>For image warping and mosaicing, I took three pictures, one outside of Moffit, one inside Moffit and one in my room.</p>
+      <p>
+        For image warping and mosaicing, I took three pictures, one outside of
+        Moffit, one inside Moffit and one in my room.
+      </p>
       <div class="image-container">
         <img src="./img/my_room1.png" alt="My Room 1" />
         <img src="./img/my_room2.png" alt="My Room 2" />
@@ -137,23 +153,135 @@
         mosaic.
       </p>
       <div class="image-container">
-        <img src="./img/out-door-1.png" alt="Outdoor 1" class="blend"/>
-        <img src="./img/out-door-2.png" alt="Outdoor 2" class="blend"/>
-        <img src="./img/stitch_image.png" class="blend"/>
-      </div>
-       <div class="image-container">
-        <img src="./img/moffit_in_1.png" class="blend"/>
-        <img src="./img/moffit_in_2.png" class="blend"/>
-        <img src="./img/stitched_image.jpg" class="blend"/>
+        <img src="./img/out-door-1.png" alt="Outdoor 1" class="blend" />
+        <img src="./img/out-door-2.png" alt="Outdoor 2" class="blend" />
+        <img src="./img/stitch_image.png" class="blend" />
       </div>
       <div class="image-container">
-        <img src="./img/my_room1.png" class="blend"/>
-        <img src="./img/my_room2.png" class="blend"/>
-        <img src="./img/stitch_image_2.png" class="blend"/>
+        <img src="./img/moffit_in_1.png" class="blend" />
+        <img src="./img/moffit_in_2.png" class="blend" />
+        <img src="./img/stitched_image.jpg" class="blend" />
       </div>
-     
-    </div>
+      <div class="image-container">
+        <img src="./img/my_room1.png" class="blend" />
+        <img src="./img/my_room2.png" class="blend" />
+        <img src="./img/stitch_image_2.png" class="blend" />
+      </div>
     </div>
 
+    <h1>Part B: FEATURE MATCHING for AUTOSTITCHING</h1>
+    <div>
+      <h2>1. Harris Interest Point Detector</h2>
+      <p>
+        I implemented the Harris Interest Point Detector using the provided
+        sample code in harris.py, focusing on identifying corner point points at
+        a single scale without sub-pixel accuracy. By leveraging the existing
+        code, I efficiently detected Harris corners in an image and created a
+        visual representation that overlays the detected corners on the original
+        image to highlight the points of interest.
+      </p>
+      <div class="image-container">
+        <img src="./img/my_room1.png" class="blend" />
+        <img src="./img/my_room1_with_corners.png" class="blend" />
+      </div>
+    </div>
+    <div>
+      <h2>2. Implement Adaptive Non-Maximal Suppression</h2>
+      <p>
+        I implemented Adaptive Non-maximal Suppression (ANMS) to address the
+        clustering of Harris interest points, which often leads to redundant
+        information in feature matching. ANMS aims to evenly distribute these
+        interest points across the image for more effective matching. To achieve
+        a target number of interest points, I utilized a binary search approach
+        to determine the optimal radius needed to filter down to this desired
+        quantity. My algorithmic methods are based on the techniques described
+        in the paper
+        <a
+          href="https://www.sciencedirect.com/science/article/pii/S016786551830062X?via=ihub"
+          >"Efficient adaptive non-maximal suppression algorithms for
+          homogeneous spatial keypoint distribution"</a
+        >
+        by Bailo et al.
+      </p>
+      <div class="image-container">
+        <img src="./img/my_room_1_with_anms.png" class="blend" />
+      </div>
+    </div>
+    <div>
+      <h2>3. Feature Descriptor extraction</h2>
+      <p>
+        I implemented feature descriptor extraction by focusing on axis-aligned
+        8x8 patches from interest points. To ensure the descriptors are robust,
+        I sampled these patches from a larger 40x40 window, which allows for a
+        well-blurred descriptor. I applied bias and gain normalization to the
+        extracted descriptors to enhance their effectiveness. I ignored the
+        wavelet transform section of the original method. In this process, I
+        sampled points from a patch of a specified radius with designated
+        spacing, taking care to use a low-pass filtered image (equivalent to a
+        Gaussian blur) to prevent aliasing. After sampling, I flattened and
+        normalized the features to ensure they have the desired properties.
+      </p>
+      <div class="image-container2">
+        <div>I inlcuded some visualized Feature Descriptor</div>
+        <img src="./img/feature_extract.png" class="feature_extract" />
+      </div>
+    </div>
+    <div>
+      <h2>4. Implement Feature Matching</h2>
+      <p>
+        I implemented feature matching by taking a list of feature descriptors
+        from multiple images and applying Lowe's ratio test to identify good
+        matches. Using the k-nearest neighbor approach, I filtered matches based
+        on the distance ratio between the closest and second-closest matches,
+        with a default threshold of 0.75. I also calculated the average distance
+        of good matches and filtered out those exceeding this average to enhance
+        match quality.
+      </p>
+      <div class="image-container2">
+        <img src="./img/match_pionts.png" class="match" />
+      </div>
+    </div>
+    <div>
+      <h2>RANSAC</h2>
+      <p>
+        I implemented a robust homography estimation using the 4-point RANSAC
+        algorithm. The process starts by randomly sampling four unique points
+        from two sets of matched keypoints, im1Points and im2Points. For each
+        sample, I computed the homography matrix 𝐻 H that relates these points.
+        After calculating the reprojection error by applying the homography to
+        the original points and measuring the Euclidean distance to the
+        corresponding points, I identified inliers based on a predefined error
+        threshold. The algorithm iterates for a specified number of times,
+        keeping track of the homography that yields the maximum number of
+        inliers. Finally, I returned the best homography matrix along with the
+        inlier points that were used in the estimation, ensuring a robust
+        alignment of the two sets of points despite potential noise and outliers
+        in the data.
+      </p>
+      <div class="image-container">
+        <img src="./img/my_room1.png" class="blend" />
+        <img src="./img/my_room2.png" class="blend" />
+      </div>
+      <div class="image-container">
+        <img src="./img/match_pionts.png" class="blend" />
+        <img src="./img/stitch_image_2-1.png" class="blend" />
+      </div>
+      <div class="image-container">
+        <img src="./img/moffit_in_1.png" class="blend" />
+        <img src="./img/moffit_in_2.png" class="blend" />
+      </div>
+      <div class="image-container">
+        <img src="./img/moffit_point_match.png" class="blend" />
+        <img src="./img/stitched_image-2.jpg" class="blend" />
+      </div>
+      <div class="image-container">
+        <img src="./img/out-door-1.png" class="blend" />
+        <img src="./img/out-door-2.png" class="blend" />
+      </div>
+      <div class="image-container">
+        <img src="./img/out-door-matchingpoint.png" class="blend" />
+        <img src="./img/stitch_outdor.png" class="blend" />
+      </div>
+    </div>
   </body>
 </html>
